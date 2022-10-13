@@ -6,6 +6,7 @@ dependencies:
   - python=3.9
   - pyarrow>=3.0
   - black
+  - pytest=7.1.2=py39hca03da5_0
   # - ipython
   # - notebook
   # - ipykernel
