@@ -3,7 +3,6 @@ import sys
 
 
 def get_logger():
-    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(

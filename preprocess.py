@@ -1,5 +1,4 @@
 import pandas as pd
-from bs4 import BeautifulSoup
 from typing import List
 from constants import Const, DFCols
 import os
@@ -17,30 +16,6 @@ def shorten_dataset(
     df.to_parquet(f"{Const.root_data_original}/{output_name}_{str(size)}.parquet")
 
 
-def get_code_block(text: str) -> str:
-    soup = BeautifulSoup(text, "html.parser")
-    all_code = soup.findAll("pre")
-    return "\n".join([s.string for s in all_code])
-
-
-def extract_code(df: pd.DataFrame) -> pd.DataFrame:
-    # example = '<p>Given a module <code>foo</code> with method <code>bar</code>:</p><pre><code>import foobar = getattr(foo, "bar")result = bar()</code></pre><p><a href="https://docs.python.org/library/functions.html#getattr" rel="noreferrer"><code>getattr</code></a> can similarly be used on class instance bound methods, module-level methods, class methods... the list goes on.</p>'
-
-    df[DFCols.processed_feature.value] = df[DFCols.unprocessed_feature.value].apply(
-        lambda x: get_code_block(x)
-    )
-
-    return df
-
-
-def create_embeddings(df: pd.DataFrame, cd: CodeEmbeddings) -> pd.DataFrame:
-    df[DFCols.embedded_feature.value] = df[DFCols.processed_feature.value].apply(
-        lambda x: cd.get_embeddings(x)
-    )
-
-    return df
-
-
 def safe_save(df: pd.DataFrame, path: str, name: str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
@@ -53,16 +28,21 @@ def safe_save(df: pd.DataFrame, path: str, name: str) -> None:
 
 
 def run(path: str = Const.root_data_processed, name: str = "data_embedded") -> None:
-    df = pd.read_parquet(f"{Const.root_data_original}/full_data_small_10.parquet").head(
-        n=3
-    )
+    df = pd.read_parquet(f"{Const.root_data_original}/full_data_small_10.parquet")
 
     ce = CodeEmbeddings()
 
-    df = extract_code(df)
-    df = create_embeddings(df, ce)
+    df[DFCols.processed_feature.value] = ce.extract_code(
+        df[DFCols.unprocessed_feature.value]
+    )
+    ce.init_tfidf(df[DFCols.processed_feature.value])
+    tfidf = ce.get_tfidf("def self __init__ hello self")
+    print(f"tfidf: {tfidf}")
 
-    safe_save(df, path, name)
+    df[DFCols.embedded_feature.value] = de.create_embeddings(
+        df[DFCols.processed_feature.value]
+    )
+    # safe_save(df, path, name)
 
 
 if __name__ == "__main__":
