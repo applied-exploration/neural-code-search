@@ -3,7 +3,6 @@ import os
 
 if "SPARK_HOME" in os.environ:
     del os.environ["SPARK_HOME"]
-# os.environ["PYSPARK_SUBMIT_ARGS"] = "--driver-memory 8G"
 
 # %%
 

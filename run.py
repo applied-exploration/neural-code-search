@@ -1,8 +1,3 @@
-import torch
-from torch.nn import CosineSimilarity
+if __name__ == '__main__':
+    raise Exception('run.py: Not Implemented')
 
-
-cos = CosineSimilarity()
-
-
-print(cos(s1, s3))

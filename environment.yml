@@ -1,45 +1,118 @@
-name: nlp
+name: neural-code-search
 channels:
-  - conda-forge
   - huggingface
+  - conda-forge
+  - defaults
 dependencies:
-  - python=3.9
-  - pyarrow>=3.0
-  - black
+  - arrow-cpp=9.0.0=py39h3e392ae_7_cpu
+  - attrs=22.1.0=pyh71513ae_1
+  - aws-c-cal=0.5.11=h4530763_0
+  - aws-c-common=0.6.2=h3422bc3_0
+  - aws-c-event-stream=0.2.7=h9972306_13
+  - aws-c-io=0.10.5=hea86ef8_0
+  - aws-checksums=0.1.11=h487e1a8_7
+  - aws-sdk-cpp=1.8.186=hb86bbe7_3
+  - beautifulsoup4=4.11.1=py39hca03da5_0
+  - black=22.10.0=py39h2804cbe_0
+  - blas=1.0=openblas
+  - bottleneck=1.3.5=py39heec5a64_0
+  - brotlipy=0.7.0=py39h1a28f6b_1002
+  - bzip2=1.0.8=h3422bc3_4
+  - c-ares=1.18.1=h3422bc3_0
+  - ca-certificates=2022.07.19=hca03da5_0
+  - certifi=2022.9.24=py39hca03da5_0
+  - cffi=1.15.1=py39h22df2f2_0
+  - charset-normalizer=2.0.4=pyhd3eb1b0_0
+  - click=8.1.3=py39h2804cbe_0
+  - cryptography=37.0.1=py39h834c97f_0
+  - filelock=3.6.0=pyhd3eb1b0_0
+  - future=0.18.2=py39hca03da5_1
+  - gflags=2.2.2=hc88da5d_1004
+  - glog=0.6.0=h6da1cb0_0
+  - grpc-cpp=1.47.1=h503f348_6
+  - huggingface_hub=0.10.1=py_0
+  - idna=3.3=pyhd3eb1b0_0
+  - iniconfig=1.1.1=pyh9f0ad1d_0
+  - joblib=1.1.0=pyhd3eb1b0_0
+  - krb5=1.19.3=hf9b2bbe_0
+  - libabseil=20220623.0=cxx17_h28b99d4_4
+  - libblas=3.9.0=16_osxarm64_openblas
+  - libbrotlicommon=1.0.9=h1c322ee_7
+  - libbrotlidec=1.0.9=h1c322ee_7
+  - libbrotlienc=1.0.9=h1c322ee_7
+  - libcblas=3.9.0=16_osxarm64_openblas
+  - libcrc32c=1.1.2=hbdafb3b_0
+  - libcurl=7.85.0=hd538317_0
+  - libcxx=14.0.6=h2692d47_0
+  - libedit=3.1.20191231=hc8eb9b7_2
+  - libev=4.33=h642e427_1
+  - libevent=2.1.10=hbae9a57_4
+  - libffi=3.4.2=h3422bc3_5
+  - libgfortran=5.0.0=11_3_0_hd922786_25
+  - libgfortran5=11.3.0=hdaf2cc0_25
+  - libgoogle-cloud=2.2.0=hf64735a_1
+  - liblapack=3.9.0=16_osxarm64_openblas
+  - libnghttp2=1.47.0=h232270b_1
+  - libopenblas=0.3.21=openmp_hc731615_3
+  - libprotobuf=3.21.7=hb5ab8b9_0
+  - libsqlite=3.39.4=h76d750c_0
+  - libssh2=1.10.0=hb80f160_3
+  - libthrift=0.16.0=h1a74c4f_2
+  - libutf8proc=2.7.0=h3422bc3_0
+  - libzlib=1.2.13=h03a7124_4
+  - llvm-openmp=14.0.4=hd125106_0
+  - lz4-c=1.9.3=hbdafb3b_1
+  - mypy_extensions=0.4.3=py39h2804cbe_5
+  - ncurses=6.3=h07bb92c_1
+  - ninja=1.10.2=hca03da5_5
+  - ninja-base=1.10.2=h525c30c_5
+  - numexpr=2.8.3=py39h144ceef_0
+  - numpy=1.23.1=py39h42add53_0
+  - numpy-base=1.23.1=py39hadd41eb_0
+  - openssl=1.1.1q=h1a28f6b_0
+  - orc=1.8.0=hef0d403_0
+  - packaging=21.3=pyhd8ed1ab_0
+  - pandas=1.4.4=py39hc377ac9_0
+  - parquet-cpp=1.5.1=2
+  - pathspec=0.10.1=pyhd8ed1ab_0
+  - pip=22.2.2=pyhd8ed1ab_0
+  - platformdirs=2.5.2=pyhd8ed1ab_1
+  - pluggy=1.0.0=py39h2804cbe_3
+  - py=1.11.0=pyh6c4a22f_0
+  - pyarrow=9.0.0=py39h6e2a28c_7_cpu
+  - pycparser=2.21=pyhd3eb1b0_0
+  - pyopenssl=22.0.0=pyhd3eb1b0_0
+  - pyparsing=3.0.9=pyhd8ed1ab_0
+  - pysocks=1.7.1=py39hca03da5_0
   - pytest=7.1.2=py39hca03da5_0
-  # - ipython
-  # - notebook
-  # - ipykernel
-  # - pytorch>=1.8
-  # - tqdm
-  # - numpy
-  # - pandas
-  # - pytest
-  # - tensorboard
-  # - pyright
-  # - wandb
-  # - python-dotenv
-  # - nltk
-  # - transformers
-  # - datasets
-  # - scikit-learn
-  # - spacy
-  # - imbalanced-learn
-  # - swifter
-  # - huggingface_hub
-  # - pytorch-lightning
-  # - matplotlib
-  # - scipy
-  # - joblib
-  # - pydeps
-  # - isort
-  # - pip
-  # - pip:
-  #     - URLExtract
-  #     - emoji>=2.0.0
-  #     - autocorrect
-  #     - spello
-  #     - https://github.com/itchingpixels/pycaleva/archive/patch-1.zip
-  #     - perspective
-
-prefix: /usr/local/anaconda3/envs/nlp
+  - python=3.9.13=hc596b02_0_cpython
+  - python-dateutil=2.8.2=pyhd3eb1b0_0
+  - python_abi=3.9=2_cp39
+  - pytorch=1.10.2=cpu_py39h23cb94c_0
+  - pytz=2022.1=py39hca03da5_0
+  - pyyaml=6.0=py39h1a28f6b_0
+  - re2=2022.06.01=h9a09cb3_0
+  - readline=8.1.2=h46ed386_0
+  - regex=2022.7.9=py39h1a28f6b_0
+  - requests=2.28.1=py39hca03da5_0
+  - sacremoses=master=py_0
+  - setuptools=65.4.1=pyhd8ed1ab_0
+  - six=1.16.0=pyhd3eb1b0_1
+  - snappy=1.1.9=h39c3846_1
+  - soupsieve=2.3.1=pyhd3eb1b0_0
+  - sqlite=3.39.4=h2229b38_0
+  - tk=8.6.12=he1e0b03_0
+  - tokenizers=0.11.4=py39h5c5695e_1
+  - tomli=2.0.1=pyhd8ed1ab_0
+  - tqdm=4.64.1=py39hca03da5_0
+  - transformers=4.18.0=py39hca03da5_0
+  - typing-extensions=4.3.0=py39hca03da5_0
+  - typing_extensions=4.3.0=py39hca03da5_0
+  - tzdata=2022e=h191b570_0
+  - urllib3=1.26.11=py39hca03da5_0
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.6=h57fd34a_0
+  - yaml=0.2.5=h1a28f6b_0
+  - zlib=1.2.13=h03a7124_4
+  - zstd=1.5.2=h8128057_4
+prefix: /Users/zoltanctoth/anaconda3/envs/neural-code-search
