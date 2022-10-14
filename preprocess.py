@@ -38,18 +38,19 @@ def create_embeddings(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# shorten_dataset()
-def run(path: str = Const.root_data_processed, name: str = "data_embedded") -> None:
-    df = pd.read_parquet(f"{Const.root_data_original}/full_data_small.parquet")
-    df = extract_code(df)
-    df = create_embeddings(df)
-
+def safe_save(df: pd.DataFrame, path: str, name:str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
 
     df.to_csv(f"{path}/{name}.csv")
 
-    print(df)
+
+# shorten_dataset()
+def run(path: str = Const.root_data_processed, name: str = "data_embedded") -> None:
+    df = pd.read_parquet(f"{Const.root_data_original}/full_data_small.parquet")
+    df = extract_code(df)
+    df = create_embeddings(df)
+    safe_save(df, path, name)
 
 
 if __name__ == "__main__":
