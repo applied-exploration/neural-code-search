@@ -36,10 +36,10 @@ class CodeEmbeddings:
 
     def get_embeddings(self, text: str):
         features = self.pipeline(text)[0]
-        first_vectors = [v[0] for v in features]
+        first_dimensions = [v[0] for v in features]
         text_arr = text.split(" ")
         self.logger.debug(
-            f"Embedded text has {len(text_arr)} words but {len(features)} embeddings have been created.\ntext: {text}\nfirst vectors for all embeddings:\n{first_vectors}"
+            f"Embedded text has {len(text_arr)} words but {len(features)} embeddings have been created.\ntext: {text}\nfirst dimensions of the embeddings:\n{first_dimensions}"
         )
         return features
 
@@ -84,13 +84,13 @@ class CodeEmbeddings:
 if __name__ == "__main__":
     ce = CodeEmbeddings()
 
-    print("Strange thing #1: you always get n+2 embeddings for an n word text:")
+    print("Strange thing #1: you always get n+2 embeddings for an n word long text:")
     e = ce.get_embeddings("def")
     e = ce.get_embeddings("def hello")
     e = ce.get_embeddings("def hello print")
 
     print(
-        "Strange thing #2: we have different embeddings for the same world both in the same text and accross texts:"
+        "Strange thing #2: we have different embeddings for the same word both in the same text and across texts:"
     )
     e = ce.get_embeddings("def")
     e = ce.get_embeddings("def def def")
