@@ -37,15 +37,14 @@ def run(
     name: str = "data_embedded",
     pandas_sample_n=None,
 ) -> None:
-
     ce = CodeEmbeddings()
     codeextract_fn = f"{Const.root_data_processed}/data_codeextracted.parquet"
-    if False and os.path.exists(codeextract_fn):
+    if os.path.exists(codeextract_fn):
         logger.info("Loading cached data (code extract)...")
         df = pd.read_parquet(codeextract_fn)
     else:
         logger.info("Loading raw dataframe...")
-        df = pd.read_parquet(f"{Const.root_data_original}/full_data_small_500.parquet")
+        df = pd.read_parquet(f"{Const.root_data_original}/full_data.parquet")
         df = df[df[DFCols.unprocessed_feature.value].str.contains("<pre>")]
 
         if pandas_sample_n is not None:
@@ -85,4 +84,4 @@ def run(
 
 
 if __name__ == "__main__":
-    run(pandas_sample_n=500)
+    run(pandas_sample_n=5000)
