@@ -1,8 +1,14 @@
 import logging
 import sys
 
+stdout_logger = None
+
 
 def get_logger():
+    global stdout_logger
+    if stdout_logger != None:
+        return stdout_logger
+
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
@@ -13,4 +19,5 @@ def get_logger():
     stdout_handler.setFormatter(formatter)
     logger.addHandler(stdout_handler)
 
+    stdout_logger = logger
     return logger
