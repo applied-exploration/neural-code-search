@@ -1,7 +1,17 @@
 import logging
 import sys
-
+import html2text
+import pandas as pd
 stdout_logger = None
+
+
+def pretty_print_results(original_code: str, df: pd.DataFrame) -> None:
+    print(original_code)
+    print("=" * 6)
+    for index, row in df.iterrows():
+        print(html2text.html2text(row["question_body"]))
+        print("-" * 6)
+        print(html2text.html2text(row["answer_body"]))
 
 
 def get_logger():

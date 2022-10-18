@@ -12,7 +12,7 @@ def load_library(path: str) -> pd.DataFrame:
     return df
 
 
-class CosineSimilarity_Search:
+class CosineSimilaritySearch:
     def __init__(self, library: pd.DataFrame, k: int) -> None:
         self.library = library
         self.vectors = torch.stack(
@@ -27,11 +27,10 @@ class CosineSimilarity_Search:
         self.k = k
 
     def get_similarity(
-        self, embedded_texts: np.ndarray
+        self, embedded_texts: torch.Tensor
     ) -> List[int]:
 
-        embedded_texts_torched = torch.tensor(embedded_texts)
-        output = self.cos(embedded_texts_torched.unsqueeze(0), self.vectors.T)
+        output = self.cos(embedded_texts.unsqueeze(0), self.vectors.T)
 
         k_best_similarity_value, k_best_indices = torch.topk(output, dim=0, k=self.k)
 
