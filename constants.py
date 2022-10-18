@@ -8,6 +8,7 @@ class Const:
     root_path: str = root_path
     root_data_original: str = f"{root_path}/original"
     root_data_processed: str = f"{root_path}/processed"
+    embeddings_model_path = "models/code-embeddings.hfmodel"
 
 
 class DFCols(Enum):

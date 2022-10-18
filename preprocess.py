@@ -1,9 +1,12 @@
 import pandas as pd
-from data.utils import get_embeddings
-from bs4 import BeautifulSoup
 from typing import List
 from constants import Const, DFCols
 import os
+import sys
+from utils import get_logger
+from code_embeddings import CodeEmbeddings
+
+logger = get_logger()
 
 
 def shorten_dataset(
@@ -14,44 +17,71 @@ def shorten_dataset(
     df.to_parquet(f"{Const.root_data_original}/{output_name}_{str(size)}.parquet")
 
 
-def get_code_block(text: str) -> str:
-    soup = BeautifulSoup(text, "html.parser")
-    all_code = soup.findAll("code")
-    return "\n".join([s.string for s in all_code])
-
-
-def extract_code(df: pd.DataFrame) -> pd.DataFrame:
-    # example = '<p>Given a module <code>foo</code> with method <code>bar</code>:</p><pre><code>import foobar = getattr(foo, "bar")result = bar()</code></pre><p><a href="https://docs.python.org/library/functions.html#getattr" rel="noreferrer"><code>getattr</code></a> can similarly be used on class instance bound methods, module-level methods, class methods... the list goes on.</p>'
-
-    df[DFCols.processed_feature.value] = df[DFCols.unprocessed_feature.value].apply(
-        lambda x: get_code_block(x)
-    )
-
-    return df
-
-
-def create_embeddings(df: pd.DataFrame) -> pd.DataFrame:
-    df[DFCols.embedded_feature.value] = df[DFCols.processed_feature.value].apply(
-        lambda x: get_embeddings(x)
-    )
-
-    return df
-
-
-def safe_save(df: pd.DataFrame, path: str, name:str) -> None:
+def safe_save(df: pd.DataFrame, path: str, name: str, format: str = "csv") -> None:
     if not os.path.exists(path):
         os.makedirs(path)
 
-    df.to_csv(f"{path}/{name}.csv")
+    if format == "csv":
+        df.to_csv(f"{path}/{name}.csv")
+    elif format == "parquet":
+        df.to_parquet(f"{path}/{name}.parquet")
+    else:
+        raise ValueError(f"Unrecognized format: {format}")
 
 
 # shorten_dataset()
-def run(path: str = Const.root_data_processed, name: str = "data_embedded") -> None:
-    df = pd.read_parquet(f"{Const.root_data_original}/full_data_small.parquet")
-    df = extract_code(df)
-    df = create_embeddings(df)
-    safe_save(df, path, name)
+
+
+def run(
+    path: str = Const.root_data_processed,
+    name: str = "data_embedded",
+    pandas_sample_n=None,
+) -> None:
+    ce = CodeEmbeddings()
+    codeextract_fn = f"{Const.root_data_processed}/data_codeextracted.parquet"
+    if os.path.exists(codeextract_fn):
+        logger.info("Loading cached data (code extract)...")
+        df = pd.read_parquet(codeextract_fn)
+    else:
+        logger.info("Loading raw dataframe...")
+        df = pd.read_parquet(f"{Const.root_data_original}/full_data.parquet")
+        df = df[df[DFCols.unprocessed_feature.value].str.contains("<pre>")]
+
+        if pandas_sample_n is not None:
+            df = df[df[DFCols.unprocessed_feature.value].str.contains("pandas")]
+            df = df.head(pandas_sample_n)
+            print(f"Generating {len(df)} pandas only items.")
+
+        logger.info("Extracting code...")
+
+        df = df[df[DFCols.unprocessed_feature.value].str.contains("<pre>")]
+
+        df[DFCols.processed_feature.value] = ce.extract_code(
+            df[DFCols.unprocessed_feature.value]
+        )
+
+        safe_save(df, Const.root_data_processed, "data_codeextracted", format="parquet")
+
+    df = df[~df[DFCols.processed_feature.value].isnull()]
+
+    if pandas_sample_n is not None:
+        df = df[df[DFCols.unprocessed_feature.value].str.contains("pandas")]
+        df = df.head(pandas_sample_n)
+        print(f"Working with {len(df)} pandas only items.")
+
+    logger.info("Calculating TF-IDF...")
+
+    ce.tfidf_init(df[DFCols.processed_feature.value])
+
+    logger.info("Generating Doc embeddings")
+
+    df[DFCols.embedded_feature.value] = ce.create_doc_embeddings(
+        df[DFCols.processed_feature.value]
+    )
+
+    logger.info(f"Saving final dataset to {path}/{name}.parquet.")
+    safe_save(df, path, name, format="parquet")
 
 
 if __name__ == "__main__":
-    run()
+    run(pandas_sample_n=5000)
