@@ -6,6 +6,7 @@ import pandas as pd
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
 from utils import get_logger
+from cosine_similarity import CosineSimilarity_Search
 
 
 def ce_init():
@@ -32,3 +33,6 @@ if __name__ == "__main__":
     logger.info(f"Tokens: {tokens_str}")
     e = ce.get_doc_embedding(tokens_str)
     logger.info(f"Doc e embedding dim1: {e[0]}")
+
+    cos_search = CosineSimilarity_Search(library=df)
+    result = cos_search.get_similarity(e)
