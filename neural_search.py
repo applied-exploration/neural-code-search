@@ -28,7 +28,7 @@ class NeuralSearch:
         self.embbeding, library = ce_init()
         self.cos_search = CosineSimilaritySearch(library=library, k=3)
 
-    def preprocess(self, search_corpus: str) -> None:
+    def preprocess(self, search_corpus: pd.DataFrame) -> None:
         pass
 
     def _embbed_query(self, query: str) -> torch.Tensor:

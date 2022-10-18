@@ -38,5 +38,3 @@ if __name__ == "__main__":
     cos_search = CosineSimilaritySearch(library=df, k=3)
     k_best_indicies = cos_search.get_similarity(e)
     original_snippets = cos_search.snippet_lookup(k_best_indicies)
-
-    pretty_print_results(code, original_snippets)
