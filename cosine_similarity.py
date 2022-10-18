@@ -2,7 +2,7 @@ import pandas as pd
 from constants import Const, DFCols
 from torch.nn import CosineSimilarity
 import torch
-from typing import Tuple
+from typing import Tuple, List
 import numpy as np
 
 
@@ -28,11 +28,17 @@ class CosineSimilarity_Search:
 
     def get_similarity(
         self, embedded_texts: np.ndarray
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> List[int]:
 
         embedded_texts_torched = torch.tensor(embedded_texts)
         output = self.cos(embedded_texts_torched.unsqueeze(0), self.vectors.T)
 
         k_best_similarity_value, k_best_indices = torch.topk(output, dim=0, k=self.k)
 
-        return output, k_best_indices
+        return k_best_indices.tolist()
+
+    def snippet_lookup(self, indicies:List[int])->pd.DataFrame:
+        return self.library.iloc[indicies]
+        
+        
+        

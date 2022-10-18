@@ -7,6 +7,17 @@ from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
 from utils import get_logger
 from cosine_similarity import CosineSimilarity_Search
+from bs4 import BeautifulSoup
+import html2text
+
+
+def pretty_print_results(original_code: str, df: pd.DataFrame) -> None:
+    print(original_code)
+    print("=" * 6)
+    for index, row in df.iterrows():
+        print(html2text.html2text(row["question_body"]))
+        print("-" * 6)
+        print(html2text.html2text(row["answer_body"]))
 
 
 def ce_init():
@@ -34,5 +45,8 @@ if __name__ == "__main__":
     e = ce.get_doc_embedding(tokens_str)
     logger.info(f"Doc e embedding dim1: {e[0]}")
 
-    cos_search = CosineSimilarity_Search(library=df)
-    result = cos_search.get_similarity(e)
+    cos_search = CosineSimilarity_Search(library=df, k=3)
+    k_best_indicies = cos_search.get_similarity(e)
+    original_snippets = cos_search.snippet_lookup(k_best_indicies)
+
+    pretty_print_results(code, original_snippets)
