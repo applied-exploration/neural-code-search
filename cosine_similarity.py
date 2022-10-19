@@ -1,9 +1,11 @@
 import pandas as pd
-from constants import Const, DFCols
-from torch.nn import CosineSimilarity
+from typing import List
+
+import pandas as pd
 import torch
-from typing import Tuple, List
-import numpy as np
+from torch.nn import CosineSimilarity
+
+from constants import DFCols
 
 
 def load_library(path: str) -> pd.DataFrame:
@@ -26,9 +28,7 @@ class CosineSimilaritySearch:
         self.cos = CosineSimilarity(dim=1)
         self.k = k
 
-    def get_similarity(
-        self, embedded_texts: torch.Tensor
-    ) -> List[int]:
+    def get_similarity(self, embedded_texts: torch.Tensor) -> List[int]:
 
         output = self.cos(embedded_texts.unsqueeze(0), self.vectors.T)
 
@@ -36,8 +36,5 @@ class CosineSimilaritySearch:
 
         return k_best_indices.tolist()
 
-    def snippet_lookup(self, indicies:List[int])->pd.DataFrame:
+    def snippet_lookup(self, indicies: List[int]) -> pd.DataFrame:
         return self.library.iloc[indicies]
-        
-        
-        

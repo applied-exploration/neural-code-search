@@ -1,13 +1,11 @@
-from multiprocessing.util import get_logger
 import os
 
 import pandas as pd
 
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
-from utils import get_logger
 from cosine_similarity import CosineSimilaritySearch
-import html2text
+from utils import get_logger
 
 
 def ce_init():

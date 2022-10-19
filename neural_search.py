@@ -1,10 +1,12 @@
+import os
+from typing import Tuple, List
+
 import pandas as pd
 import torch
-from typing import Tuple, List
-from cosine_similarity import CosineSimilaritySearch
+
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
-import os
+from cosine_similarity import CosineSimilaritySearch
 from utils import pretty_print_results
 
 

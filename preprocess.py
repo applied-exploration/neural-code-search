@@ -1,10 +1,10 @@
-import pandas as pd
-from typing import List
-from constants import Const, DFCols
 import os
-import sys
-from utils import get_logger
+
+import pandas as pd
+
 from code_embeddings import CodeEmbeddings
+from constants import Const, DFCols
+from utils import get_logger
 
 logger = get_logger()
 
@@ -54,20 +54,18 @@ def run(
 
         logger.info("Extracting code...")
 
-        df = df[df[DFCols.unprocessed_feature.value].str.contains("<pre>")]
-
         df[DFCols.processed_feature.value] = ce.extract_code(
             df[DFCols.unprocessed_feature.value]
         )
 
         safe_save(df, Const.root_data_processed, "data_codeextracted", format="parquet")
 
-    df = df[~df[DFCols.processed_feature.value].isnull()]
-
     if pandas_sample_n is not None:
         df = df[df[DFCols.unprocessed_feature.value].str.contains("pandas")]
         df = df.head(pandas_sample_n)
         print(f"Working with {len(df)} pandas only items.")
+
+    df = df[~df[DFCols.processed_feature.value].isnull()]
 
     logger.info("Calculating TF-IDF...")
 
@@ -84,4 +82,4 @@ def run(
 
 
 if __name__ == "__main__":
-    run(pandas_sample_n=5000)
+    run(pandas_sample_n=50000)

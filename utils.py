@@ -1,7 +1,9 @@
 import logging
 import sys
+
 import html2text
 import pandas as pd
+
 stdout_logger = None
 
 
@@ -16,7 +18,7 @@ def pretty_print_results(original_code: str, df: pd.DataFrame) -> None:
 
 def get_logger():
     global stdout_logger
-    if stdout_logger != None:
+    if stdout_logger is not None:
         return stdout_logger
 
     logger = logging.getLogger()

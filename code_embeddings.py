@@ -1,19 +1,17 @@
-from ipaddress import v6_int_to_packed
 import os.path
 import re
 from typing import List, Tuple, Dict, Optional
 
-from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
-import sklearn
 import transformers
-from tqdm import tqdm
+from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
+from tqdm import tqdm
 from transformers import pipeline, AutoModel, AutoTokenizer
 
-from constants import Const, DFCols
 import utils
+from constants import Const
 
 tqdm.pandas()
 
@@ -23,8 +21,10 @@ class CodeEmbeddings:
         self.embeddings = {}
         self.logger = utils.get_logger()
 
-        self.fitted_tfidf_vec: TfidfVectorizer
-        self.pipeline: transformers.Pipeline
+        self.fitted_tfidf: Optional[TfidfVectorizer] = None
+        self.pipeline: Optional[transformers.Pipeline] = None
+        self.tfidf_features: Dict[str, float]
+        self.tfidf_features: Optional[np.ndarray[str]] = None
 
         if not os.path.exists(Const.embeddings_model_path):
             p = pipeline(
@@ -48,15 +48,15 @@ class CodeEmbeddings:
     ) -> Optional[List[Tuple[str, List[float]]]]:
         if code_str is None or len(code_str.strip()) == 0:
             return None
-        try:
-            features = self.pipeline(code_str)[0]
-        except Exception as e:
-            raise Exception(len(code_str))
-        text_arr = code_str.split(" ")
+
+        features = self.pipeline(code_str)[0]
+
+        text_arr = code_str.split(" ")  # TODO use tokenizer
         feat_wo_sos_eos = list(features)[1:-1]
         return list(zip(text_arr, feat_wo_sos_eos))
 
-    def _normalize_1d(self, v: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def _normalize_1d(v: np.ndarray) -> np.ndarray:
         norm = np.linalg.norm(v)
         if norm == 0:
             return v
@@ -64,7 +64,6 @@ class CodeEmbeddings:
 
     def get_doc_embedding(self, code_str: str) -> Optional[np.ndarray]:
         # implementing the formula from https://ai.facebook.com/blog/neural-code-search-ml-based-code-search-using-natural-language-queries/
-        tfidf = None
         if code_str is None or len(code_str.strip()) == 0:
             return None
         we = self.get_word_embeddings(code_str)
@@ -78,22 +77,24 @@ class CodeEmbeddings:
     def create_doc_embeddings(self, code_series: pd.Series) -> pd.Series:
         return code_series.progress_apply(lambda x: self.get_doc_embedding(x))
 
-    def get_code_block(self, text: str) -> str:
+    @staticmethod
+    def get_code_block(text: str) -> str:
         soup = BeautifulSoup(text, "html.parser")
-        all_code = soup.findAll("pre", text=True, recursive=True)
+        all_code = soup.findAll("pre", text=True)
         if len(all_code) == 0:
             return ""
         return "\n".join([s.string for s in all_code])
 
-    def extract_tokens_str(self, code_str: str) -> str:
+    @staticmethod
+    def extract_tokens_str(code_str: str) -> str:
         # TODO: Figure out what's a good for limiting length and token size.
         # Based on the codebert paper token size must be limited to 512, but it still breaks with some longer text,
-        # hence limiting code length to 1000
+        # hence limiting code length to 510
 
         if code_str is None or len(code_str.strip()) == 0:
             return ""
-        code_str = code_str[:1000]
-        words = re.findall(r"[a-zA-Z_]+[a-zA-Z0-9_]*", code_str)
+        code_str = code_str[:510]
+        words = re.findall(r"[a-zA-Z0-9]+", code_str)
         words = words[:512]  # Codebert model can't work with a longer input than 512
         return " ".join(words)
 
@@ -106,11 +107,11 @@ class CodeEmbeddings:
 
     def tfidf_init(self, code_series: pd.Series) -> None:
         vectorizer = TfidfVectorizer()
-        self.fitted_tfidf_vec = vectorizer.fit(code_series)
-        self.tfidf_features = self.fitted_tfidf_vec.get_feature_names_out()
+        self.fitted_tfidf = vectorizer.fit(code_series)
+        self.tfidf_features = self.fitted_tfidf.get_feature_names_out()
 
     def get_tfidf(self, text: str) -> Dict[str, float]:
-        docterm_matrix = self.fitted_tfidf_vec.transform([text])
+        docterm_matrix = self.fitted_tfidf.transform([text])
         scores = {word: 0 for word in text.split(" ")}
         rows, cols = docterm_matrix.nonzero()
         for row, col in zip(rows, cols):
