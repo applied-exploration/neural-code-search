@@ -104,8 +104,6 @@ class CodeEmbeddings:
             lambda x: self.extract_tokens_str(self.get_code_block(x))
         )
 
-        return df
-
     def tfidf_init(self, code_series: pd.Series) -> None:
         vectorizer = TfidfVectorizer()
         self.fitted_tfidf_vec = vectorizer.fit(code_series)

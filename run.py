@@ -1,8 +1,5 @@
-if __name__ == '__main__':
-    raise Exception('run.py: Not Implemented')
+from neural_search import NeuralSearch
 
-<<<<<<< Updated upstream
-=======
 
 def search(query: str) -> None:
     search_module = NeuralSearch()
@@ -21,4 +18,4 @@ if __name__ == "__main__":
             return L[0]
         """
     )
->>>>>>> Stashed changes
+

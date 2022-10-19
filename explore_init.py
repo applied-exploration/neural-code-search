@@ -6,6 +6,8 @@ import pandas as pd
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
 from utils import get_logger
+from cosine_similarity import CosineSimilaritySearch
+import html2text
 
 
 def ce_init():
@@ -32,3 +34,7 @@ if __name__ == "__main__":
     logger.info(f"Tokens: {tokens_str}")
     e = ce.get_doc_embedding(tokens_str)
     logger.info(f"Doc e embedding dim1: {e[0]}")
+
+    cos_search = CosineSimilaritySearch(library=df, k=3)
+    k_best_indicies = cos_search.get_similarity(e)
+    original_snippets = cos_search.snippet_lookup(k_best_indicies)
