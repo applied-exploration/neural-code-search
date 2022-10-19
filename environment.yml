@@ -196,4 +196,5 @@ dependencies:
   - zipp=3.9.0=pyhd8ed1ab_0
   - zlib=1.2.13=h03a7124_4
   - zstd=1.5.2=h8128057_4
+  - html2text
 prefix: /Users/zoltanctoth/anaconda3/envs/neural-code-search
