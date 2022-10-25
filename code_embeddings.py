@@ -1,4 +1,5 @@
 import os.path
+import pickle
 import re
 from typing import List, Tuple, Dict, Optional
 
@@ -8,12 +9,20 @@ import transformers
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
-from transformers import pipeline, AutoModel, AutoTokenizer
+from transformers import (
+    pipeline,
+    AutoModel,
+    AutoTokenizer,
+    RobertaTokenizer,
+    RobertaModel,
+)
 
 import utils
 from constants import Const
 
 tqdm.pandas()
+
+logger = utils.get_logger()
 
 
 class CodeEmbeddings:
@@ -21,27 +30,33 @@ class CodeEmbeddings:
         self.embeddings = {}
         self.logger = utils.get_logger()
 
-        self.fitted_tfidf: Optional[TfidfVectorizer] = None
-        self.pipeline: Optional[transformers.Pipeline] = None
         self.tfidf_features: Dict[str, float]
         self.tfidf_features: Optional[np.ndarray[str]] = None
+        self.fitted_tfidf: Optional[TfidfVectorizer] = None
+
+        self.tokenizer: Optional[RobertaTokenizer] = None
+        self.model: Optional[RobertaModel] = None
+
+        self.pipeline: Optional[transformers.Pipeline] = None
 
         if not os.path.exists(Const.embeddings_model_path):
-            p = pipeline(
-                "feature-extraction",
-                model="microsoft/codebert-base",
-                tokenizer="microsoft/codebert-base",
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                "microsoft/codebert-base", truncate=True, max_length=3
             )
-            p.save_pretrained(Const.embeddings_model_path)
+            self.model = AutoModel.from_pretrained("microsoft/codebert-base")
+            self.pipeline = pipeline(
+                "feature-extraction", model=self.model, tokenizer=self.tokenizer
+            )
+            self.pipeline.save_pretrained(Const.embeddings_model_path)
         else:
-            tokenizer = AutoTokenizer.from_pretrained(
+            self.tokenizer = AutoTokenizer.from_pretrained(
                 Const.embeddings_model_path, return_tensors="pt"
             )
-            model = AutoModel.from_pretrained(Const.embeddings_model_path)
+            self.model = AutoModel.from_pretrained(Const.embeddings_model_path)
 
-            p = pipeline("feature-extraction", model=model, tokenizer=tokenizer)
-
-        self.pipeline = p
+            self.pipeline = pipeline(
+                "feature-extraction", model=self.model, tokenizer=self.tokenizer
+            )
 
     def get_word_embeddings(
         self, code_str: str
@@ -106,9 +121,24 @@ class CodeEmbeddings:
         )
 
     def tfidf_init(self, code_series: pd.Series) -> None:
-        vectorizer = TfidfVectorizer()
-        self.fitted_tfidf = vectorizer.fit(code_series)
-        self.tfidf_features = self.fitted_tfidf.get_feature_names_out()
+        tfidf_cache_fn = f"{Const.root_data_processed}/tfidf.pkl"
+        if os.path.exists(tfidf_cache_fn):
+            logger.debug(f"Loading TF/IDF cache from {tfidf_cache_fn}")
+            tfidf_cache_payload = pickle.load(open(tfidf_cache_fn, "rb"))
+            self.fitted_tfidf = tfidf_cache_payload["fitted_tfidf"]
+            self.tfidf_features = tfidf_cache_payload["features"]
+        else:
+            logger.debug(
+                f"Calculating TF/IDF from scratch and saving it to f{tfidf_cache_fn}"
+            )
+            vectorizer = TfidfVectorizer()
+            self.fitted_tfidf = vectorizer.fit(code_series)
+            self.tfidf_features = self.fitted_tfidf.get_feature_names_out()
+            tfidf_cache_payload = {
+                "fitted_tfidf": self.fitted_tfidf,
+                "features": self.tfidf_features,
+            }
+            pickle.dump(tfidf_cache_payload, open(tfidf_cache_fn, "wb"))
 
     def get_tfidf(self, text: str) -> Dict[str, float]:
         docterm_matrix = self.fitted_tfidf.transform([text])
