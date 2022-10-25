@@ -42,6 +42,7 @@ def run(
     if os.path.exists(codeextract_fn):
         logger.info("Loading cached data (code extract)...")
         df = pd.read_parquet(codeextract_fn)
+        logger.info(f"Loaded {len(df)} items")
     else:
         logger.info("Loading raw dataframe...")
         df = pd.read_parquet(f"{Const.root_data_original}/full_data.parquet")
@@ -50,7 +51,7 @@ def run(
         if pandas_sample_n is not None:
             df = df[df[DFCols.unprocessed_feature.value].str.contains("pandas")]
             df = df.head(pandas_sample_n)
-            print(f"Generating {len(df)} pandas only items.")
+            logger.info(f"Generating {len(df)} pandas only items.")
 
         logger.info("Extracting code...")
 
@@ -82,4 +83,4 @@ def run(
 
 
 if __name__ == "__main__":
-    run(pandas_sample_n=50000)
+    run(pandas_sample_n=5000000)

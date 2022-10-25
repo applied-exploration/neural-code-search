@@ -33,3 +33,7 @@ def get_logger():
 
     stdout_logger = logger
     return logger
+
+
+def identity(anything):
+    return anything

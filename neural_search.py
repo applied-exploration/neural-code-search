@@ -34,8 +34,7 @@ class NeuralSearch:
         pass
 
     def _embbed_query(self, query: str) -> torch.Tensor:
-        tokens_str = self.embbeding.extract_tokens_str(query)
-        e = self.embbeding.get_doc_embedding(tokens_str)
+        e = self.embbeding.get_doc_embedding(self.embbeding.generate_tokens(query))
 
         embbedded_query = torch.from_numpy(e).float()
         return embbedded_query
