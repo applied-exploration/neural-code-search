@@ -7,4 +7,4 @@ def search(query: str) -> None:
 
 
 if __name__ == "__main__":
-    search('def hello_s(s: str):\n    print(f"Hello s")')
+    search("return code_series.progress_apply(lambda x: self.get_doc_embedding(x))")

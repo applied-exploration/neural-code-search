@@ -1,13 +1,17 @@
 import os
+import time
 from typing import Tuple, List
 
 import pandas as pd
 import torch
 
+import utils
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
 from cosine_similarity import CosineSimilaritySearch
 from utils import pretty_print_results
+
+logger = utils.get_logger()
 
 
 def ce_init():
@@ -40,10 +44,12 @@ class NeuralSearch:
         return embbedded_query
 
     def predict(self, query: str) -> Tuple[List[int], pd.DataFrame]:
+        start = time.time()
         embbeded_query = self._embbed_query(query)
         k_best_indicies = self.cos_search.get_similarity(embbeded_query)
         original_snippets = self.cos_search.snippet_lookup(k_best_indicies)
 
         pretty_print_results(query, original_snippets)
-
+        end = time.time()
+        logger.debug(f"Prediction took f{end - start} seconds")
         return k_best_indicies, original_snippets

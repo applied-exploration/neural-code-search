@@ -114,7 +114,7 @@ class CodeEmbeddings:
 
     def tfidf_init(self, code_series: pd.Series) -> None:
         tfidf_cache_fn = f"{Const.root_data_processed}/tfidf.pkl"
-        if False and os.path.exists(tfidf_cache_fn):
+        if os.path.exists(tfidf_cache_fn):
             logger.debug(f"Loading TF/IDF cache from {tfidf_cache_fn}")
             tfidf_cache_payload = pickle.load(open(tfidf_cache_fn, "rb"))
             self.fitted_tfidf = tfidf_cache_payload["fitted_tfidf"]
