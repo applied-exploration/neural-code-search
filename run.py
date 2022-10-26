@@ -6,5 +6,16 @@ def search(query: str) -> None:
     search_module.predict(query)
 
 
+
 if __name__ == "__main__":
-    search("return code_series.progress_apply(lambda x: self.get_doc_embedding(x))")
+    # search('def hello_s(s: str):\n    print(f"Hello s")')
+    search(
+        """
+        L = x.tolist()
+        if len(L) > 1:
+            return L
+        else:
+            return L[0]
+        """
+    )
+

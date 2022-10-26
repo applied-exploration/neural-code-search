@@ -16,12 +16,12 @@ def load_library(path: str) -> pd.DataFrame:
 
 class CosineSimilaritySearch:
     def __init__(self, library: pd.DataFrame, k: int) -> None:
-        self.library = library
+        self.library = library[~library[DFCols.embedded_feature.value].isnull()].reset_index()
+
         self.vectors = torch.stack(
             [
                 torch.from_numpy(vector).float()
                 for vector in self.library[DFCols.embedded_feature.value].to_list()
-                if vector is not None
             ],
             dim=1,
         )
