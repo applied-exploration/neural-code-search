@@ -17,16 +17,16 @@ def shorten_dataset(
     df.to_parquet(f"{Const.root_data_original}/{output_name}_{str(size)}.parquet")
 
 
-def safe_save(df: pd.DataFrame, path: str, name: str, format: str = "csv") -> None:
+def safe_save(df: pd.DataFrame, path: str, name: str, file_format: str = "csv") -> None:
     if not os.path.exists(path):
         os.makedirs(path)
 
-    if format == "csv":
+    if file_format == "csv":
         df.to_csv(f"{path}/{name}.csv")
-    elif format == "parquet":
+    elif file_format == "parquet":
         df.to_parquet(f"{path}/{name}.parquet")
     else:
-        raise ValueError(f"Unrecognized format: {format}")
+        raise ValueError(f"Unrecognized format: {file_format}")
 
 
 # shorten_dataset()
@@ -59,7 +59,9 @@ def run(
             df[DFCols.unprocessed_feature.value]
         )
 
-        safe_save(df, Const.root_data_processed, "data_codeextracted", format="parquet")
+        safe_save(
+            df, Const.root_data_processed, "data_codeextracted", file_format="parquet"
+        )
 
     if pandas_sample_n is not None:
         df = df[df[DFCols.unprocessed_feature.value].str.contains("pandas")]
@@ -79,7 +81,7 @@ def run(
     )
 
     logger.info(f"Saving final dataset to {path}/{name}.parquet.")
-    safe_save(df, path, name, format="parquet")
+    safe_save(df, path, name, file_format="parquet")
 
 
 if __name__ == "__main__":

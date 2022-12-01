@@ -7,6 +7,7 @@ import pandas as pd
 import torch
 import transformers
 from bs4 import BeautifulSoup
+from numpy import ndarray
 from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
 from transformers import (
@@ -73,7 +74,7 @@ class CodeEmbeddings:
             return v
         return v / norm
 
-    def get_doc_embedding(self, token_list: List[str]) -> Optional[torch.Tensor]:
+    def get_doc_embedding(self, token_list: List[str]) -> ndarray:
         # implementing the formula from https://ai.facebook.com/blog/neural-code-search-ml-based-code-search-using-natural-language-queries/
         we = self.get_word_embeddings(token_list)
         tfidf = self.get_tfidf(token_list)
