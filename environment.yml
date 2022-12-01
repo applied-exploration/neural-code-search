@@ -18,7 +18,7 @@ dependencies:
   - backports=1.0=py_2
   - backports.functools_lru_cache=1.6.4=pyhd8ed1ab_0
   - beautifulsoup4=4.11.1=py39hca03da5_0
-  - black=22.10.0=py39h2804cbe_0
+  - black=22.6.0=py39hca03da5_0
   - blas=1.0=openblas
   - bleach=5.0.1=pyhd8ed1ab_0
   - bokeh=2.4.3=pyhd8ed1ab_3
@@ -38,6 +38,7 @@ dependencies:
   - dask-core=2022.10.0=pyhd8ed1ab_0
   - debugpy=1.6.3=py39h3c22d25_0
   - decorator=5.1.1=pyhd8ed1ab_0
+  - dill=0.3.5.1=pyhd8ed1ab_0
   - distributed=2022.10.0=pyhd8ed1ab_0
   - entrypoints=0.4=pyhd8ed1ab_0
   - executing=1.1.1=pyhd8ed1ab_0
@@ -50,6 +51,7 @@ dependencies:
   - glog=0.6.0=h6da1cb0_0
   - grpc-cpp=1.47.1=h503f348_6
   - heapdict=1.0.1=py_0
+  - html2text=2020.1.16=py_0
   - huggingface_hub=0.10.1=py_0
   - idna=3.3=pyhd3eb1b0_0
   - importlib-metadata=4.11.4=py39h2804cbe_0
@@ -117,9 +119,10 @@ dependencies:
   - numpy=1.23.1=py39h42add53_0
   - numpy-base=1.23.1=py39hadd41eb_0
   - openjpeg=2.5.0=h5d4e404_1
-  - openssl=1.1.1q=ha287fd2_0
+  - openssl=1.1.1q=h03a7124_1
   - orc=1.8.0=hef0d403_0
   - packaging=21.3=pyhd8ed1ab_0
+  - pandarallel=1.6.1=pyhd8ed1ab_0
   - pandas=1.4.4=py39hc377ac9_0
   - parquet-cpp=1.5.1=2
   - parso=0.8.3=pyhd8ed1ab_0
@@ -196,5 +199,11 @@ dependencies:
   - zipp=3.9.0=pyhd8ed1ab_0
   - zlib=1.2.13=h03a7124_4
   - zstd=1.5.2=h8128057_4
-  - html2text
+  - pip:
+    - aiohttp==3.8.3
+    - aiosignal==1.2.0
+    - async-timeout==4.0.2
+    - frozenlist==1.3.1
+    - multidict==6.0.2
+    - yarl==1.8.1
 prefix: /Users/zoltanctoth/anaconda3/envs/neural-code-search

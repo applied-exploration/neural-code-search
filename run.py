@@ -6,9 +6,9 @@ def search(query: str) -> None:
     search_module.predict(query)
 
 
-
 if __name__ == "__main__":
     # search('def hello_s(s: str):\n    print(f"Hello s")')
+
     search(
         """
         L = x.tolist()
@@ -18,4 +18,3 @@ if __name__ == "__main__":
             return L[0]
         """
     )
-

@@ -1,11 +1,17 @@
+import os
+import time
+from typing import Tuple, List
+
 import pandas as pd
 import torch
-from typing import Tuple, List
-from cosine_similarity import CosineSimilaritySearch
+
+import utils
 from code_embeddings import CodeEmbeddings
 from constants import Const, DFCols
-import os
+from cosine_similarity import CosineSimilaritySearch
 from utils import pretty_print_results
+
+logger = utils.get_logger()
 
 
 def ce_init():
@@ -25,24 +31,25 @@ def ce_init():
 
 class NeuralSearch:
     def __init__(self) -> None:
-        self.embbeding, library = ce_init()
+        self.embedding, library = ce_init()
         self.cos_search = CosineSimilaritySearch(library=library, k=3)
 
     def preprocess(self, search_corpus: pd.DataFrame) -> None:
         pass
 
-    def _embbed_query(self, query: str) -> torch.Tensor:
-        tokens_str = self.embbeding.extract_tokens_str(query)
-        e = self.embbeding.get_doc_embedding(tokens_str)
+    def _embed_query(self, query: str) -> torch.Tensor:
+        e = self.embedding.get_doc_embedding(self.embedding.generate_tokens(query))
 
-        embbedded_query = torch.from_numpy(e).float()
-        return embbedded_query
+        embedded_query = torch.from_numpy(e).float()
+        return embedded_query
 
     def predict(self, query: str) -> Tuple[List[int], pd.DataFrame]:
-        embbeded_query = self._embbed_query(query)
-        k_best_indicies = self.cos_search.get_similarity(embbeded_query)
-        original_snippets = self.cos_search.snippet_lookup(k_best_indicies)
+        start = time.time()
+        embedded_query = self._embed_query(query)
+        k_best_indices = self.cos_search.get_similarity(embedded_query)
+        original_snippets = self.cos_search.snippet_lookup(k_best_indices)
 
         pretty_print_results(query, original_snippets)
-
-        return k_best_indicies, original_snippets
+        end = time.time()
+        logger.debug(f"Prediction took f{end - start} seconds")
+        return k_best_indices, original_snippets
